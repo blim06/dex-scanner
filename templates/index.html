@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pool Data Viewer</title>
+    <style>
+        th {
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Pool Data Viewer</h1>
+    <form method="POST">
+        <label for="attribute">Select Attribute:</label>
+        <select id="attribute" name="attribute">
+            <option value="base_token_price_usd">Base Token Price (USD)</option>
+            <option value="fdv_usd">FDV (USD)</option>
+            <option value="market_cap_usd">Market Cap (USD)</option>
+            <option value="reserve_in_usd">Reserve (USD)</option>
+            <option value="price_change_m5">Price Change (M5)</option>
+            <option value="price_change_h1">Price Change (H1)</option>
+            <option value="price_change_h6">Price Change (H6)</option>
+            <option value="price_change_h24">Price Change (H24)</option>
+            <option value="volume_m5">Volume (M5)</option>
+            <option value="volume_h1">Volume (H1)</option>
+            <option value="volume_h6">Volume (H6)</option>
+            <option value="volume_h24">Volume (H24)</option>
+            <option value="transactions_m5_buys">Transactions (M5 Buys)</option>
+            <option value="transactions_m5_sells">Transactions (M5 Sells)</option>
+            <option value="transactions_m15_buys">Transactions (M15 Buys)</option>
+            <option value="transactions_m15_sells">Transactions (M15 Sells)</option>
+        </select>
+
+        <label for="condition">Condition:</label>
+        <select id="condition" name="condition">
+            <option value="greater">Greater Than</option>
+            <option value="less">Less Than</option>
+        </select>
+
+        <label for="value">Value:</label>
+        <input type="text" id="value" name="value" required>
+
+        <button type="submit">Filter</button>
+    </form>
+
+    <h2>Filtered Results</h2>
+    <table id="data-table" border="1">
+        <thead>
+            <tr>
+                <th onclick="sortTable(0)">Pool ID</th>
+                <th onclick="sortTable(1)">Name</th>
+                <th onclick="sortTable(2)">Base Token Price (USD)</th>
+                <th onclick="sortTable(3)">FDV (USD)</th>
+                <th onclick="sortTable(4)">Market Cap (USD)</th>
+                <th onclick="sortTable(5)">Reserve (USD)</th>
+                <th onclick="sortTable(6)">Price Change (M5)</th>
+                <th onclick="sortTable(7)">Price Change (H1)</th>
+                <th onclick="sortTable(8)">Price Change (H6)</th>
+                <th onclick="sortTable(9)">Price Change (H24)</th>
+                <th onclick="sortTable(10)">Volume (M5)</th>
+                <th onclick="sortTable(11)">Volume (H1)</th>
+                <th onclick="sortTable(12)">Volume (H6)</th>
+                <th onclick="sortTable(13)">Volume (H24)</th>
+                <th onclick="sortTable(14)">Transactions (M5 Buys)</th>
+                <th onclick="sortTable(15)">Transactions (M5 Sells)</th>
+                <th onclick="sortTable(16)">Transactions (M15 Buys)</th>
+                <th onclick="sortTable(17)">Transactions (M15 Sells)</th>
+                <th onclick="sortTable(18)">Pool Created At</th>
+                <th onclick="sortTable(19)">Address</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in data %}
+            <tr>
+                <td>{{ row["pool_id"] }}</td>
+                <td>{{ row["name"] }}</td>
+                <td>{{ row["base_token_price_usd"] }}</td>
+                <td>{{ row["fdv_usd"] }}</td>
+                <td>{{ row["market_cap_usd"] }}</td>
+                <td>{{ row["reserve_in_usd"] }}</td>
+                <td>{{ row["price_change_m5"] }}</td>
+                <td>{{ row["price_change_h1"] }}</td>
+                <td>{{ row["price_change_h6"] }}</td>
+                <td>{{ row["price_change_h24"] }}</td>
+                <td>{{ row["volume_m5"] }}</td>
+                <td>{{ row["volume_h1"] }}</td>
+                <td>{{ row["volume_h6"] }}</td>
+                <td>{{ row["volume_h24"] }}</td>
+                <td>{{ row["transactions_m5_buys"] }}</td>
+                <td>{{ row["transactions_m5_sells"] }}</td>
+                <td>{{ row["transactions_m15_buys"] }}</td>
+                <td>{{ row["transactions_m15_sells"] }}</td>
+                <td>{{ row["pool_created_at"] }}</td>
+                <td>{{ row["address"] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <script>
+        function sortTable(columnIndex) {
+            const table = document.getElementById("data-table");
+            const rows = Array.from(table.rows).slice(1); // skip header row
+            let ascending = true;
+
+            // Check if the column is already sorted in ascending order
+            if (table.rows[0].cells[columnIndex].classList.contains("asc")) {
+                ascending = false;
+                table.rows[0].cells[columnIndex].classList.remove("asc");
+                table.rows[0].cells[columnIndex].classList.add("desc");
+            } else {
+                table.rows[0].cells[columnIndex].classList.remove("desc");
+                table.rows[0].cells[columnIndex].classList.add("asc");
+            }
+
+            // Sort rows based on the selected column
+            rows.sort((rowA, rowB) => {
+                const cellA = rowA.cells[columnIndex].innerText.trim();
+                const cellB = rowB.cells[columnIndex].innerText.trim();
+
+                const a = isNaN(cellA) ? cellA : parseFloat(cellA);
+                const b = isNaN(cellB) ? cellB : parseFloat(cellB);
+
+                return ascending ? a - b : b - a;
+            });
+
+            // Re-append rows in the new order
+            rows.forEach(row => table.appendChild(row));
+        }
+    </script>
+</body>
+</html>
